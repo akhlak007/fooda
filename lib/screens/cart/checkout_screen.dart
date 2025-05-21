@@ -10,4 +10,4 @@ class CheckoutScreen extends StatelessWidget {
       body: const Center(child: Text('Checkout Screen')),
     );
   }
-} 
+}

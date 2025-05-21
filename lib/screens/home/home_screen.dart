@@ -18,6 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dummyMenuItem = MenuItem(
+      id: '1',
+      name: 'Burger',
+      description: 'Tasty burger',
+      imageUrl: '',
+      price: 120,
+      rating: 4,
+      category: 'Main Course',
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explore Menu'),
@@ -104,6 +113,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/product',
+                arguments: dummyMenuItem,
+              );
+            },
+            child: const Text('Go to Product Detail'),
           ),
         ],
       ),
