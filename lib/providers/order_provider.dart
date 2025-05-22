@@ -23,7 +23,7 @@ class OrderProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      _firestoreService.getOrders(userId).listen((orderList) {
+      _firestoreService.getUserOrders().listen((orderList) {
         _orders = orderList;
         notifyListeners();
       });
@@ -39,7 +39,7 @@ class OrderProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      await _firestoreService.addOrder(order);
+      await _firestoreService.createOrder(order);
     } catch (e) {
       _error = e.toString();
     }
