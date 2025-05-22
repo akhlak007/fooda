@@ -6,7 +6,8 @@ class Order {
   final List<OrderItem> items;
   final double total;
   final String status;
-  final String address;
+  final String paymentMethod;
+  final String deliveryAddress;
   final DateTime createdAt;
   final DateTime? deliveredAt;
 
@@ -16,7 +17,8 @@ class Order {
     required this.items,
     required this.total,
     required this.status,
-    required this.address,
+    required this.paymentMethod,
+    required this.deliveryAddress,
     required this.createdAt,
     this.deliveredAt,
   });
@@ -31,7 +33,8 @@ class Order {
           [],
       total: (map['total'] ?? 0.0).toDouble(),
       status: map['status'] ?? 'pending',
-      address: map['address'] ?? '',
+      paymentMethod: map['paymentMethod'] ?? 'Cash on Delivery',
+      deliveryAddress: map['deliveryAddress'] ?? '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       deliveredAt: map['deliveredAt'] != null
           ? (map['deliveredAt'] as Timestamp).toDate()
@@ -45,7 +48,8 @@ class Order {
       'items': items.map((item) => item.toMap()).toList(),
       'total': total,
       'status': status,
-      'address': address,
+      'paymentMethod': paymentMethod,
+      'deliveryAddress': deliveryAddress,
       'createdAt': Timestamp.fromDate(createdAt),
       'deliveredAt':
           deliveredAt != null ? Timestamp.fromDate(deliveredAt!) : null,
@@ -58,7 +62,8 @@ class Order {
     List<OrderItem>? items,
     double? total,
     String? status,
-    String? address,
+    String? paymentMethod,
+    String? deliveryAddress,
     DateTime? createdAt,
     DateTime? deliveredAt,
   }) {
@@ -68,7 +73,8 @@ class Order {
       items: items ?? this.items,
       total: total ?? this.total,
       status: status ?? this.status,
-      address: address ?? this.address,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
       createdAt: createdAt ?? this.createdAt,
       deliveredAt: deliveredAt ?? this.deliveredAt,
     );

@@ -11,7 +11,7 @@ class ProductListScreen extends StatelessWidget {
     final firestore = Provider.of<FirestoreService>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Product'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

@@ -16,6 +16,8 @@ import '../admin/admin_login_screen.dart';
 import '../admin/product_list_screen.dart';
 import '../admin/product_form_screen.dart';
 import '../admin/user_list_screen.dart';
+import '../admin/admin_orders_screen.dart';
+import '../admin/admin_home_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
@@ -35,6 +37,8 @@ class AppRoutes {
   static const adminProducts = '/admin/products';
   static const adminProductForm = '/admin/product-form';
   static const adminUsers = '/admin/users';
+  static const adminOrders = '/admin/orders';
+  static const adminHome = '/admin/home';
 
   static final routes = <String, WidgetBuilder>{
     login: (context) => const LoginScreen(),
@@ -54,5 +58,7 @@ class AppRoutes {
     adminProducts: (context) => const ProductListScreen(),
     adminProductForm: (context) => const ProductFormScreen(),
     adminUsers: (context) => const UserListScreen(),
+    adminOrders: (context) => const AdminOrdersScreen(),
+    adminHome: (context) => const AdminHomeScreen(),
   };
 }

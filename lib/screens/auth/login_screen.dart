@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text.trim(),
         );
         if (success && mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.adminProducts);
+          Navigator.pushReplacementNamed(context, AppRoutes.adminHome);
         } else if (adminAuth.error != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(adminAuth.error!)),
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         if (success && mounted) {
           if (authProvider.isAdmin) {
-            Navigator.pushReplacementNamed(context, AppRoutes.adminProducts);
+            Navigator.pushReplacementNamed(context, AppRoutes.adminHome);
           } else {
             Navigator.pushReplacementNamed(context, AppRoutes.home);
           }

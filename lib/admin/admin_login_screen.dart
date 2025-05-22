@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'admin_auth_provider.dart';
-import '../routes/app_routes.dart';
+import 'admin_home_screen.dart';
+// Make sure this import is correct based on your folder structure
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
+
   @override
   State<AdminLoginScreen> createState() => _AdminLoginScreenState();
 }
@@ -17,6 +19,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AdminAuthProvider>(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Admin Login')),
       body: Center(
@@ -31,7 +34,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   validator: (v) =>
-                      v == null || v.isEmpty ? 'Enter email' : null,
+                  v == null || v.isEmpty ? 'Enter email' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -39,28 +42,33 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   validator: (v) =>
-                      v == null || v.isEmpty ? 'Enter password' : null,
+                  v == null || v.isEmpty ? 'Enter password' : null,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: authProvider.isLoading
                       ? null
                       : () async {
-                          if (_formKey.currentState!.validate()) {
-                            final success = await authProvider.login(
-                              _emailController.text.trim(),
-                              _passwordController.text.trim(),
-                            );
-                            if (success && mounted) {
-                              Navigator.pushReplacementNamed(
-                                  context, AppRoutes.adminProducts);
-                            } else if (authProvider.error != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(authProvider.error!)),
-                              );
-                            }
-                          }
-                        },
+                    if (_formKey.currentState!.validate()) {
+                      final success = await authProvider.login(
+                        _emailController.text.trim(),
+                        _passwordController.text.trim(),
+                      );
+                      if (success && mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const AdminHomeScreen(),
+                          ),
+                        );
+                      } else if (authProvider.error != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(authProvider.error!)),
+                        );
+                      }
+                    }
+                  },
                   child: authProvider.isLoading
                       ? const CircularProgressIndicator()
                       : const Text('Login'),
