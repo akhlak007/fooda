@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart' hide CarouselController;
 import 'package:provider/provider.dart';
+
 import '../../models/menu_item_model.dart';
 import '../../models/category_model.dart';
 import '../../services/firestore_service.dart';
@@ -18,23 +20,22 @@ class _HomeScreenState extends State<HomeScreen> {
   String? selectedCategory;
   final FirestoreService _firestoreService = FirestoreService();
   int _currentIndex = 0;
+  final List<String> _banners = [
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+    'https://i.pinimg.com/736x/29/de/79/29de79a99fee2cf9fab6cbaf31aea3ad.jpg',
+  ];
+  int _currentBanner = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-
+    setState(() => _currentIndex = index);
     switch (index) {
-      case 0: // Home
-        // Already on home screen
-        break;
-      case 1: // Menu
+      case 1:
         Navigator.pushNamed(context, AppRoutes.menu);
         break;
-      case 2: // Cart
+      case 2:
         Navigator.pushNamed(context, AppRoutes.cart);
         break;
-      case 3: // Profile
+      case 3:
         Navigator.pushNamed(context, AppRoutes.profile);
         break;
     }
@@ -58,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -73,15 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: Colors.white,
                 child: Text(
                   (user?.displayName?.isNotEmpty == true
-                          ? user!.displayName[0]
-                          : 'U')
+                      ? user!.displayName[0]
+                      : 'U')
                       .toUpperCase(),
                   style: const TextStyle(fontSize: 24, color: Colors.orange),
                 ),
               ),
-              decoration: const BoxDecoration(
-                color: Colors.orange,
-              ),
+              decoration: const BoxDecoration(color: Colors.orange),
             ),
             ListTile(
               leading: const Icon(Icons.person_outline),
@@ -114,9 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () async {
                 Navigator.pop(context);
                 await authProvider.logout();
-                if (mounted) {
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
-                }
+                if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
               },
             ),
           ],
@@ -133,31 +130,46 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Icon(Icons.location_on, color: Colors.black),
                 ),
                 const SizedBox(width: 12),
-                const Text('DELIVERY',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('DELIVERY', style: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
-          SizedBox(
-            height: 140,
-            child: PageView(
-              children: const [
-                _BannerCard(
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
-                _BannerCard(
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1519864600265-abb23847ef2c'),
-              ],
+          // Sliding Banner Carousel
+          CarouselSlider.builder(
+            itemCount: _banners.length,
+            itemBuilder: (context, index, realIndex) {
+              return _BannerCard(imageUrl: _banners[index]);
+            },
+            options: CarouselOptions(
+              height: 140,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              viewportFraction: 0.9,
+              onPageChanged: (index, reason) {
+                setState(() => _currentBanner = index);
+              },
             ),
+          ),
+          // Dots Indicator
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _banners.asMap().entries.map((entry) {
+              return Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentBanner == entry.key ? Colors.orange : Colors.grey[300],
+                ),
+              );
+            }).toList(),
           ),
           const SizedBox(height: 16),
           StreamBuilder<List<Category>>(
             stream: _firestoreService.getCategories(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
               final categories = snapshot.data!;
               return SizedBox(
                 height: 40,
@@ -167,21 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: categories.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return ChoiceChip(
-                        label: const Text('All'),
-                        selected: selectedCategory == null,
-                        onSelected: (_) =>
-                            setState(() => selectedCategory = null),
-                      );
-                    }
+                    if (index == 0) return ChoiceChip(label: const Text('All'), selected: selectedCategory == null, onSelected: (_) => setState(() => selectedCategory = null));
                     final cat = categories[index - 1];
-                    return ChoiceChip(
-                      label: Text(cat.name),
-                      selected: selectedCategory == cat.name,
-                      onSelected: (_) =>
-                          setState(() => selectedCategory = cat.name),
-                    );
+                    return ChoiceChip(label: Text(cat.name), selected: selectedCategory == cat.name, onSelected: (_) => setState(() => selectedCategory = cat.name));
                   },
                 ),
               );
@@ -192,46 +192,26 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                Text('Explore Menu',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                Text('VIEW ALL',
-                    style: TextStyle(
-                        color: Colors.orange, fontWeight: FontWeight.bold)),
+                Text('Explore Menu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('VIEW ALL', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           StreamBuilder<List<MenuItem>>(
             stream: _firestoreService.getMenuItems(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
               var items = snapshot.data!;
-              if (selectedCategory != null) {
-                items = items
-                    .where((item) => item.category == selectedCategory)
-                    .toList();
-              }
-              if (items.isEmpty) {
-                return const Center(child: Text('No items found.'));
-              }
+              if (selectedCategory != null) items = items.where((item) => item.category == selectedCategory).toList();
+              if (items.isEmpty) return const Center(child: Text('No items found.'));
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.8, crossAxisSpacing: 12, mainAxisSpacing: 12),
                   itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return _MenuItemCard(item: item);
-                  },
+                  itemBuilder: (context, index) => _MenuItemCard(item: items[index]),
                 ),
               );
             },
@@ -246,10 +226,8 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.restaurant_menu), label: 'Menu'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant_menu), label: 'Menu'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -267,7 +245,7 @@ class _BannerCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Image.network(imageUrl, fit: BoxFit.cover),
+        child: Image.network(imageUrl, fit: BoxFit.cover, width: double.infinity),
       ),
     );
   }
@@ -279,9 +257,7 @@ class _MenuItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, '/product', arguments: item);
-      },
+      onTap: () => Navigator.pushNamed(context, '/product', arguments: item),
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -290,14 +266,8 @@ class _MenuItemCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.network(
-                  item.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.fastfood, size: 48),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                child: Image.network(item.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.fastfood, size: 48)),
               ),
             ),
             Padding(

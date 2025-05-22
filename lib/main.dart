@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         Provider(create: (_) => FirestoreService()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Fooda',
         theme: ThemeData(
           primarySwatch: Colors.orange,
