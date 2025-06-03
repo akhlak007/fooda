@@ -42,6 +42,7 @@ dependencies:
   form_field_validator: ^1.1.0
   intl: ^0.20.2
   location: ^8.0.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
